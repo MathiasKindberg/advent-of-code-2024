@@ -1,35 +1,19 @@
 //! Part 1:
 //! Part 2:
 
-use core::panic;
 use std::io::BufRead;
 
 type Input = Vec<Vec<i64>>;
 
 fn is_row_valid(row: &[i64]) -> bool {
+    // Two consecutive numbers are handled by the strict ordering.
     (row.is_sorted_by(|a, b| a > b) || row.is_sorted_by(|a, b| a < b))
         && row.windows(2).all(|w| w[0].max(w[1]) - w[1].min(w[0]) <= 3)
 }
 
 fn one(input: &Input) {
     let now = std::time::Instant::now();
-
-    let sum = input
-        .iter()
-        .filter(|row| {
-            is_row_valid(&row)
-            // // Ensure that the levels are either all decreasing or increasing
-            // if !(row.is_sorted_by(|a, b| a > b) || row.is_sorted_by(|a, b| a < b)) {
-            //     return None;
-            // }
-            // // Ensure that the difference between adjacent levels is at most 3
-            // if !row.windows(2).all(|w| w[0].max(w[1]) - w[1].min(w[0]) <= 3) {
-            //     return None;
-            // }
-            // Some(())
-        })
-        .count();
-
+    let sum = input.iter().filter(|row| is_row_valid(&row)).count();
     println!("One: {sum} | Elapsed: {:?}", now.elapsed());
 }
 
