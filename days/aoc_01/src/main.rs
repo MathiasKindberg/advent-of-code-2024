@@ -15,7 +15,7 @@ fn one(input: Input) {
     let sum: i64 = left
         .iter()
         .zip(right.iter())
-        .map(|(l, r)| l.max(r) - l.min(r))
+        .map(|(l, r)| (l - r).abs())
         .sum();
 
     println!("One: {sum} | Elapsed: {:?}", now.elapsed());

@@ -8,7 +8,7 @@ type Input = Vec<Vec<i64>>;
 fn is_row_valid(row: &[i64]) -> bool {
     // Two consecutive numbers are handled by the strict ordering.
     (row.is_sorted_by(|a, b| a > b) || row.is_sorted_by(|a, b| a < b))
-        && row.windows(2).all(|w| w[0].max(w[1]) - w[1].min(w[0]) <= 3)
+        && row.windows(2).all(|w| (w[0] - w[1]).abs() <= 3)
 }
 
 fn one(input: &Input) {
