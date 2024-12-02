@@ -16,61 +16,17 @@ fn is_row_valid(row: &[i64]) -> bool {
 fn one(input: &Input) {
     let now = std::time::Instant::now();
     let sum = input.iter().filter(|row| is_row_valid(&row)).count();
-    println!("One: {sum} | Elapsed: {:?}", now.elapsed());
+
+    let elapsed = now.elapsed();
+    println!("One: {sum} | Elapsed: {elapsed:?}",);
 }
 
-fn first_invalid(row: &[i64]) -> Option<usize> {
-    // Correct difference
-    if let Some(idx) = row
-        .windows(2)
-        .flat_map(<&[i64; 2]>::try_from)
-        .find_position(|[l, r]| {
-            let diff = (l - r).abs();
-            !(diff >= 1 && diff <= 3)
-        })
-        .map(|(idx, _)| idx + 1)
-    {
-        return Some(idx);
-    }
-
-    let strictly_increasing_fail_idx = row
-        .windows(2)
-        .flat_map(<&[i64; 2]>::try_from)
-        .find_position(|[l, r]| !(l < r))
-        .map(|(idx, _)| idx + 1);
-
-    let strictly_decreasing_fail_idx = row
-        .windows(2)
-        .flat_map(<&[i64; 2]>::try_from)
-        .find_position(|[l, r]| !(l > r))
-        .map(|(idx, _)| idx + 1);
-
-    if strictly_increasing_fail_idx.is_none() || strictly_decreasing_fail_idx.is_none() {
-        return None;
-    }
-
-    match (strictly_increasing_fail_idx, strictly_decreasing_fail_idx) {
-        (None, None) => None,
-        (Some(_), None) => strictly_increasing_fail_idx,
-        (None, Some(_)) => strictly_decreasing_fail_idx,
-        (Some(failed_increasing), Some(failed_decreasing)) => {
-            Some(failed_increasing.min(failed_decreasing))
-        }
-    }
-}
-
-fn two(mut input: Input) {
+fn two_bruteforce(mut input: Input) {
     let now = std::time::Instant::now();
 
     let sum = input
         .iter_mut()
         .filter(|row| {
-            let first_invalid_idx = first_invalid(row);
-            println!("{row:?} With invalid index: {:?}", first_invalid_idx);
-            if is_row_valid(row) {
-                return true;
-            }
-
             // Bruteforce checking if we can remove any index to make it valid
             for i in 0..row.len() {
                 let first_half = &row[..i];
@@ -84,8 +40,79 @@ fn two(mut input: Input) {
             false
         })
         .count();
+    let elapsed = now.elapsed();
+    println!("Two bruteforce: {sum} | Elapsed: {elapsed:?}");
+}
 
-    println!("Two: {sum} | Elapsed: {:?}", now.elapsed());
+fn possible_invalid(row: &[i64]) -> Vec<usize> {
+    // Checks for possible invalid positions. When a window fails a check we must
+    // consider both numbers as potentially faulty.
+
+    let mut possible_invalid_idx = Vec::with_capacity(3);
+    if let Some(idx) = row
+        .windows(2)
+        .flat_map(<&[i64; 2]>::try_from)
+        .find_position(|[l, r]| {
+            let diff = (l - r).abs();
+            !(diff >= 1 && diff <= 3)
+        })
+        .map(|(idx, _)| idx)
+    {
+        possible_invalid_idx.push(idx);
+        possible_invalid_idx.push(idx + 1);
+
+        return possible_invalid_idx;
+    }
+
+    if let Some(idx) = row
+        .windows(2)
+        .flat_map(<&[i64; 2]>::try_from)
+        .find_position(|[l, r]| !(l < r))
+        .map(|(idx, _)| idx)
+    {
+        possible_invalid_idx.push(idx);
+        possible_invalid_idx.push(idx + 1);
+    }
+
+    if let Some(idx) = row
+        .windows(2)
+        .flat_map(<&[i64; 2]>::try_from)
+        .find_position(|[l, r]| !(l > r))
+        .map(|(idx, _)| idx)
+    {
+        possible_invalid_idx.push(idx);
+        possible_invalid_idx.push(idx + 1);
+    }
+
+    possible_invalid_idx
+}
+
+fn two_smart(mut input: Input) {
+    let now = std::time::Instant::now();
+
+    let sum = input
+        .iter_mut()
+        .filter(|row| {
+            if is_row_valid(row) {
+                return true;
+            }
+
+            let possible_invalid_indexes = possible_invalid(row);
+
+            for idx in possible_invalid_indexes {
+                let first_half = &row[..idx];
+                let second_half = &row[idx + 1..];
+
+                if is_row_valid(&[first_half, second_half].concat()) {
+                    return true;
+                }
+            }
+            false
+        })
+        .count();
+
+    let elapsed = now.elapsed();
+    println!("Two smart: {sum} | Elapsed: {elapsed:?}",);
 }
 
 fn parse(input: &[String]) -> Input {
@@ -106,5 +133,6 @@ fn main() {
     let input = parse(&input);
 
     one(&input);
-    two(input);
+    two_bruteforce(input.clone());
+    two_smart(input);
 }
