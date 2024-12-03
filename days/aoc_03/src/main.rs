@@ -27,13 +27,6 @@ fn one(input: &Input) {
     println!("One: {sum} | Elapsed: {elapsed:?}");
 }
 
-#[derive(Debug)]
-enum Op {
-    Enabled,
-    Disabled,
-    Mul(i64, i64),
-}
-
 fn two(input: &Input) {
     let now = std::time::Instant::now();
     let re = regex::Regex::new(r"mul\((?<l>\d+),(?<r>\d+)\)|do\(\)|don\'t\(\)").unwrap();
@@ -54,6 +47,13 @@ fn two(input: &Input) {
         })
         .flatten()
         .collect();
+
+    #[derive(Debug)]
+    enum Op {
+        Enabled,
+        Disabled,
+        Mul(i64, i64),
+    }
 
     let (_, sum) = input
         .iter()
