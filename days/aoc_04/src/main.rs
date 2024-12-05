@@ -83,10 +83,8 @@ fn two(input: &mut Input) {
 
             let matches = (0..4)
                 .filter(|_| {
-                    let diagonal_is_mas =
-                        square[0][0] == 'M' && square[1][1] == 'A' && square[2][2] == 'S';
                     aoc_lib::rotate_90_cw_2d_array(&mut square);
-                    diagonal_is_mas
+                    square[0][0] == 'M' && square[1][1] == 'A' && square[2][2] == 'S'
                 })
                 .count();
 
