@@ -59,7 +59,7 @@ pub fn rev2<T>(v: &mut Vec<Vec<T>>) {
     }
 }
 
-pub fn rotate_90_ccw_2d<T>(matrix: &mut Vec<Vec<T>>)
+pub fn rotate_90_ccw_2d<T>(matrix: &mut [Vec<T>])
 where
     T: Copy,
 {
@@ -76,7 +76,7 @@ where
     }
 }
 
-pub fn rotate_90_cw_2d<T>(matrix: &mut Vec<Vec<T>>)
+pub fn rotate_90_cw_2d<T>(matrix: &mut [Vec<T>])
 where
     T: Copy,
 {
