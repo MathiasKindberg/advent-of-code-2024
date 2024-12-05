@@ -15,7 +15,7 @@ fn one(input: &mut Input) {
     let elapsed = now.elapsed();
     println!("One: {sum} | Elapsed: {elapsed:?}");
 }
-fn two(input: &Input) {
+fn two(_input: &Input) {
     let now = std::time::Instant::now();
     let sum = 0;
 
