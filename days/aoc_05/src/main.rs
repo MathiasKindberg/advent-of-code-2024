@@ -1,8 +1,13 @@
 //! Part 1:
 //! Part 2:
 
-// type Input = (Vec<(usize, usize)>, Vec<Vec<usize>>);
 type Input = (std::collections::HashSet<(usize, usize)>, Vec<Vec<usize>>);
+
+fn is_row_valid(row: &Vec<usize>, rules: &std::collections::HashSet<(usize, usize)>) -> bool {
+    row.iter()
+        .enumerate()
+        .all(|(i, n)| row.iter().skip(i + 1).all(|r| rules.contains(&(*n, *r))))
+}
 
 fn one(input: &Input) {
     let now = std::time::Instant::now();
@@ -10,24 +15,45 @@ fn one(input: &Input) {
     let (rules, input) = input;
     let sum: usize = input
         .iter()
-        .filter_map(|row| {
-            match row
-                .iter()
-                .enumerate()
-                .all(|(i, n)| row.iter().skip(i + 1).all(|r| rules.contains(&(*n, *r))))
-            {
-                true => Some(row[row.len() / 2]),
-                false => None,
-            }
+        .filter_map(|row| match is_row_valid(row, rules) {
+            true => Some(row[row.len() / 2]),
+            false => None,
         })
         .sum();
 
     let elapsed = now.elapsed();
     println!("One: {sum} | Elapsed: {elapsed:?}");
 }
-fn two(_input: &Input) {
+
+fn two(input: &Input) {
     let now = std::time::Instant::now();
-    let sum = 0;
+
+    let (rules, input) = input;
+    let mut invalid_updates: Vec<_> = input
+        .iter()
+        .filter_map(|row| match is_row_valid(row, rules) {
+            true => None,
+            false => Some(row.clone()),
+        })
+        .collect();
+
+    let sum: usize = invalid_updates
+        .iter_mut()
+        .map(|row| {
+            // The task is essentially sorting items based on the set of rules.
+            // To do that we can use the sort_by function defining our own ordering.
+            //
+            // This is amazing.
+            row.sort_by(|l, r| {
+                if rules.contains(&(*l, *r)) {
+                    std::cmp::Ordering::Less
+                } else {
+                    std::cmp::Ordering::Greater
+                }
+            });
+            row[row.len() / 2]
+        })
+        .sum();
 
     let elapsed = now.elapsed();
     println!("Two: {sum} | Elapsed: {elapsed:?}");
