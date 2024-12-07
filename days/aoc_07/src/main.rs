@@ -25,9 +25,38 @@ fn one(input: &Input) {
     let elapsed = now.elapsed();
     println!("One: {sum} | Elapsed: {elapsed:?}");
 }
-fn two(_input: &Input) {
+
+// Recursive brute force solution
+fn solve_two(final_result: usize, result: usize, row: &[usize]) -> bool {
+    if result > final_result {
+        return false;
+    } else if row.is_empty() {
+        return result == final_result;
+    }
+
+    solve_two(final_result, result + row[0], &row[1..])
+        || solve_two(final_result, result * row[0], &row[1..])
+        || solve_two(final_result, concatenate_ints(result, row[0]), &row[1..])
+}
+
+fn concatenate_ints(a: usize, b: usize) -> usize {
+    a * 10_usize.pow(b.ilog10() + 1) + b
+}
+
+fn two(input: &Input) {
     let now = std::time::Instant::now();
-    let sum = 0;
+
+    let sum: usize = input
+        .iter()
+        .filter_map(|(result, row)| {
+            solve_two(
+                *result as usize,
+                row[0] as usize,
+                &row[1..].iter().map(|&x| x as usize).collect::<Vec<usize>>(),
+            )
+            .then_some(result)
+        })
+        .sum();
 
     let elapsed = now.elapsed();
     println!("Two: {sum} | Elapsed: {elapsed:?}");
