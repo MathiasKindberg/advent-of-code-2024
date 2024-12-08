@@ -8,7 +8,7 @@ fn one(input: &Input) {
     let re = regex::Regex::new(r"mul\((?<l>\d+),(?<r>\d+)\)").unwrap();
     let operations: Vec<(i64, i64)> = input
         .iter()
-        .map(|row| {
+        .flat_map(|row| {
             re.captures_iter(row)
                 .map(|m| {
                     (
@@ -18,7 +18,6 @@ fn one(input: &Input) {
                 })
                 .collect::<Vec<(i64, i64)>>()
         })
-        .flatten()
         .collect();
 
     let sum = operations.iter().map(|(l, r)| l * r).sum::<i64>();
@@ -33,7 +32,7 @@ fn two(input: &Input) {
 
     let input: Vec<Op> = input
         .iter()
-        .map(|row| {
+        .flat_map(|row| {
             re.captures_iter(row)
                 .map(|m| match m.get(0).unwrap().as_str() {
                     "do()" => Op::Enabled,
@@ -45,7 +44,6 @@ fn two(input: &Input) {
                 })
                 .collect::<Vec<Op>>()
         })
-        .flatten()
         .collect();
 
     #[derive(Debug)]

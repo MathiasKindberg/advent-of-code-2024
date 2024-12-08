@@ -48,14 +48,7 @@ fn two(input: &Input) {
 
     let sum: usize = input
         .iter()
-        .filter_map(|(result, row)| {
-            solve_two(
-                *result as usize,
-                row[0] as usize,
-                &row[1..].iter().map(|&x| x as usize).collect::<Vec<usize>>(),
-            )
-            .then_some(result)
-        })
+        .filter_map(|(result, row)| solve_two(*result, row[0], &row[1..]).then_some(result))
         .sum();
 
     let elapsed = now.elapsed();

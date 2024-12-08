@@ -13,7 +13,7 @@ fn one(input: &mut Input) {
             .iter()
             .map(|row| {
                 row.windows(4)
-                    .filter(|window| window == &&['X', 'M', 'A', 'S'])
+                    .filter(|window| window == &['X', 'M', 'A', 'S'])
                     .count()
             })
             .sum::<usize>();

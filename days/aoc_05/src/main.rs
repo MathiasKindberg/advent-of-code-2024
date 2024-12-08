@@ -3,7 +3,7 @@
 
 type Input = (std::collections::HashSet<(usize, usize)>, Vec<Vec<usize>>);
 
-fn is_row_valid(row: &Vec<usize>, rules: &std::collections::HashSet<(usize, usize)>) -> bool {
+fn is_row_valid(row: &[usize], rules: &std::collections::HashSet<(usize, usize)>) -> bool {
     row.iter()
         .enumerate()
         .all(|(i, n)| row.iter().skip(i + 1).all(|r| rules.contains(&(*n, *r))))

@@ -15,7 +15,7 @@ fn is_row_valid(row: &[i64]) -> bool {
 
 fn one(input: &Input) {
     let now = std::time::Instant::now();
-    let sum = input.iter().filter(|row| is_row_valid(&row)).count();
+    let sum = input.iter().filter(|row| is_row_valid(row)).count();
 
     let elapsed = now.elapsed();
     println!("One: {sum} | Elapsed: {elapsed:?}",);
@@ -54,7 +54,7 @@ fn possible_invalid(row: &[i64]) -> Vec<usize> {
         .flat_map(<&[i64; 2]>::try_from)
         .find_position(|[l, r]| {
             let diff = (l - r).abs();
-            !(diff >= 1 && diff <= 3)
+            !(1..=3).contains(&diff)
         })
         .map(|(idx, _)| idx)
     {
@@ -67,7 +67,7 @@ fn possible_invalid(row: &[i64]) -> Vec<usize> {
     if let Some(idx) = row
         .windows(2)
         .flat_map(<&[i64; 2]>::try_from)
-        .find_position(|[l, r]| !(l < r))
+        .find_position(|[l, r]| (l >= r))
         .map(|(idx, _)| idx)
     {
         possible_invalid_idx.push(idx);
@@ -77,7 +77,7 @@ fn possible_invalid(row: &[i64]) -> Vec<usize> {
     if let Some(idx) = row
         .windows(2)
         .flat_map(<&[i64; 2]>::try_from)
-        .find_position(|[l, r]| !(l > r))
+        .find_position(|[l, r]| (l <= r))
         .map(|(idx, _)| idx)
     {
         possible_invalid_idx.push(idx);

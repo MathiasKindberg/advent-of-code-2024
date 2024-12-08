@@ -5,15 +5,11 @@ struct Input {
 }
 
 fn get_antinodes(loc_1: (isize, isize), loc_2: (isize, isize)) -> [(isize, isize); 2] {
-    // Order the input to ensure the topmost coordinate comes first.
-    let mut locations = [&loc_1, &loc_2];
-    locations.sort();
+    let row_dist = loc_2.0 - loc_1.0;
+    let col_dist = loc_2.1 - loc_1.1;
 
-    let row_dist = locations[1].0 - locations[0].0;
-    let col_dist = locations[1].1 - locations[0].1;
-
-    let antinode_1 = (locations[0].0 - row_dist, locations[0].1 - col_dist);
-    let antinode_2 = (locations[1].0 + row_dist, locations[1].1 + col_dist);
+    let antinode_1 = (loc_1.0 - row_dist, loc_1.1 - col_dist);
+    let antinode_2 = (loc_2.0 + row_dist, loc_2.1 + col_dist);
 
     [antinode_1, antinode_2]
 }
@@ -52,19 +48,15 @@ fn get_continous_antinodes_within_bounds(
     max_row: isize,
     max_col: isize,
 ) -> Vec<(isize, isize)> {
-    // Order the input to ensure the topmost coordinate comes first.
-    let mut locations = [&loc_1, &loc_2];
-    locations.sort();
-
     // => We have at least two antennas of the same frequency. Thus
     // we need to include their locations.....
     let mut antinodes = vec![loc_1, loc_2];
 
-    let row_dist = locations[1].0 - locations[0].0;
-    let col_dist = locations[1].1 - locations[0].1;
+    let row_dist = loc_2.0 - loc_1.0;
+    let col_dist = loc_2.1 - loc_1.1;
 
-    let mut next_row = locations[0].0 - row_dist;
-    let mut next_col = locations[0].1 - col_dist;
+    let mut next_row = loc_1.0 - row_dist;
+    let mut next_col = loc_1.1 - col_dist;
 
     while next_row >= 0 && next_row < max_row && next_col >= 0 && next_col < max_col {
         antinodes.push((next_row, next_col));
@@ -72,8 +64,8 @@ fn get_continous_antinodes_within_bounds(
         next_col -= col_dist;
     }
 
-    let mut next_row = locations[1].0 + row_dist;
-    let mut next_col = locations[1].1 + col_dist;
+    let mut next_row = loc_2.0 + row_dist;
+    let mut next_col = loc_2.1 + col_dist;
 
     while next_row >= 0 && next_row < max_row && next_col >= 0 && next_col < max_col {
         antinodes.push((next_row, next_col));
