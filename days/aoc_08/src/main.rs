@@ -1,12 +1,9 @@
-//! Part 1:
-//! Part 2:
 struct Input {
     locations: std::collections::HashMap<char, Vec<(isize, isize)>>,
     max_row: isize,
     max_col: isize,
 }
 
-// fn get_antinodes(loc_1: (isize, isize), loc_2: (isize, isize)) -> [(isize, isize); 2] {
 fn get_antinodes(loc_1: (isize, isize), loc_2: (isize, isize)) -> [(isize, isize); 2] {
     // Order the input to ensure the topmost coordinate comes first.
     let mut locations = [&loc_1, &loc_2];
@@ -48,10 +45,62 @@ fn one(input: &Input) {
     println!("One: {sum} | Elapsed: {elapsed:?}");
 }
 
-fn two(_input: &Input) {
-    let now = std::time::Instant::now();
-    let sum = 0;
+// Now simply extend the line of antinodes until they pass the edge of the grid.
+fn get_continous_antinodes_within_bounds(
+    loc_1: (isize, isize),
+    loc_2: (isize, isize),
+    max_row: isize,
+    max_col: isize,
+) -> Vec<(isize, isize)> {
+    // Order the input to ensure the topmost coordinate comes first.
+    let mut locations = [&loc_1, &loc_2];
+    locations.sort();
 
+    // => We have at least two antennas of the same frequency. Thus
+    // we need to include their locations.....
+    let mut antinodes = vec![loc_1, loc_2];
+
+    let row_dist = locations[1].0 - locations[0].0;
+    let col_dist = locations[1].1 - locations[0].1;
+
+    let mut next_row = locations[0].0 - row_dist;
+    let mut next_col = locations[0].1 - col_dist;
+
+    while next_row >= 0 && next_row < max_row && next_col >= 0 && next_col < max_col {
+        antinodes.push((next_row, next_col));
+        next_row -= row_dist;
+        next_col -= col_dist;
+    }
+
+    let mut next_row = locations[1].0 + row_dist;
+    let mut next_col = locations[1].1 + col_dist;
+
+    while next_row >= 0 && next_row < max_row && next_col >= 0 && next_col < max_col {
+        antinodes.push((next_row, next_col));
+        next_row += row_dist;
+        next_col += col_dist;
+    }
+
+    antinodes
+}
+
+fn two(input: &Input) {
+    use itertools::Itertools;
+    let now = std::time::Instant::now();
+
+    let mut all_antinodes = std::collections::HashSet::new();
+
+    for (_, locations) in input.locations.iter() {
+        for locs in locations.iter().combinations(2) {
+            get_continous_antinodes_within_bounds(*locs[0], *locs[1], input.max_row, input.max_col)
+                .iter()
+                .for_each(|antinode| {
+                    all_antinodes.insert(*antinode);
+                });
+        }
+    }
+
+    let sum = all_antinodes.len();
     let elapsed = now.elapsed();
     println!("Two: {sum} | Elapsed: {elapsed:?}");
 }
