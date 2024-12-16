@@ -114,7 +114,7 @@ fn one_and_two(input: &Input) {
     println!("One: {} | Elapsed: {elapsed:?}", paths.len());
     println!(
         "Two: {} | Elapsed: {elapsed:?}",
-        paths.iter().map(|(_, count)| count).sum::<usize>()
+        paths.values().sum::<usize>()
     );
 }
 
